@@ -1,0 +1,4 @@
+ stage("Build Docker file"){
+    sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID.'
+    sh 'docker image tag -t $JOB_NAME:v1.$BUILD_ID bhavisharadhya/$JOB_NAME:V1.$BUILD_I'
+    sh 'docker image tag -t $JOB_NAME:v1.$BUILD_ID bhavisharadhya/$JOB_NAME:latest'
