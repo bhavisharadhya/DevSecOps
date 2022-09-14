@@ -2,3 +2,10 @@
     sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID.'
     sh 'docker image tag -t $JOB_NAME:v1.$BUILD_ID bhavisharadhya/$JOB_NAME:V1.$BUILD_I'
     sh 'docker image tag -t $JOB_NAME:v1.$BUILD_ID bhavisharadhya/$JOB_NAME:latest'
+    
+        MISTAKES
+    
+    stage('Building Docker image'){    
+    sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID .'
+    sh 'docker image tag $JOB_NAME:v1.$BUILD_ID nbharathkumara/$JOB_NAME:v1.$BUILD_ID'
+    sh 'docker image tag $JOB_NAME:v1.$BUILD_ID nbharathkumara/$JOB_NAME:latest'
