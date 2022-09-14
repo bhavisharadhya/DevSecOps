@@ -1,4 +1,3 @@
-// Working Docker file to host a sample static web page
 FROM centos:latest
 MAINTAINER bhavisharadhya.u@gmail.com
 RUN cd /etc/yum.repos.d/
