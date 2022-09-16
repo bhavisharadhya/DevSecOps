@@ -1,0 +1,45 @@
+def dockerrun = 'docker run -p 7000:80 -d --name bhavii-server bhavisharadhya/$JOB_NAME:latest'
+def dockerrm = 'docker container rm -f bhavii-server &>/dev/null'
+def dockerimagerm = 'docker image rmi bhavisharadhya/$JOB_NAME &>/dev/null'
+
+
+pipeline{
+    agent any
+    stages{
+        stage('Checking out'){
+            steps{
+            git branch: 'main', url: 'https://github.com/bhavisharadhya/DevSecOps.git'
+            }
+        }
+        
+        stage('Build Docker image'){
+            steps{
+                sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID .'
+                sh 'docker image tag $JOB_NAME:v1.$BUILD_ID bhavisharadhya/$JOB_NAME:v1.$BUILD_ID'
+                sh 'docker image tag $JOB_NAME:v1.$BUILD_ID bhavisharadhya/$JOB_NAME:latest'
+            }
+        }
+        
+        stage('Push in docker'){
+            steps{
+                withCredentials([string(credentialsId: 'secpass', variable: 'secpass')]) {
+    // some block
+            sh 'docker login -u bhavisharadhya -p ${secpass}'
+            sh 'docker image push bhavisharadhya/$JOB_NAME:v1.$BUILD_ID'
+            sh 'docker image push bhavisharadhya/$JOB_NAME:latest'
+            sh 'docker image rmi $JOB_NAME:v1.$BUILD_ID bhavisharadhya/$JOB_NAME:v1.$BUILD_ID bhavisharadhya/$JOB_NAME:latest '
+        }
+            }
+        }
+        
+        stage('Deploy the image'){
+            steps{
+                sshagent(['ecpass']) {
+            sh "ssh -o StrictHostKeyChecking=no ec2-user@43.205.178.204 ${dockerrm}"
+            sh "ssh -o StrictHostKeyChecking=no ec2-user@43.205.178.204 ${dockerimagerm}"
+            sh "ssh -o StrictHostKeyChecking=no ec2-user@43.205.178.204 ${dockerrun}"
+       }
+            }
+        }
+    }
+}
